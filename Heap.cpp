@@ -1,58 +1,70 @@
 #include "Heap.hpp"
 
 // swap 2 nodes
-void swapNodes( HNode* node1, HNode* node2) {
-	HNode temp = *node1;
-	*node1 = *node2;
-	*node2 = temp;
+void swapNodes( std::vector<HNode*> root, int val1, int val2) {  // swap two nodes
+	HNode* temp = root[val1];
+	root[val1] = root[val2];
+	root[val2] = temp;
 }
 
 // add an element to the tree
-void Heap::enqueue( HNode* newElement) {
-	tree.push_back(0);
-	position = tree.size() - 1;
-	fix_up(position);
+void Heap::enqueue( HNode* newElement) { // push in a new node and fix up
+	if (position + 1 >= tree.size())
+		tree.resize(tree.size() + 1);
+	position++;
 	tree[position] = newElement;
+	count++;
+	fix_up(position);
 }
 
 // fix the heap from a specific index up
-void Heap::fix_up(const int& index) {
-	position = index;
-	while ((position > 1) && (tree[position] < tree[(position - 1) / 2])) {
-		tree[position] = tree[(position - 1) / 2]; 
+void Heap::fix_up(const int& index) {    // compare nodes and there children to find the correct spot
+	int location = index;
+	int ancestor;
+	while (location >= 2) {
+		ancestor = location / 2;
+		if (*tree[location] < *tree[ancestor]) {
+			swapNodes(tree, location, ancestor);
+			location = ancestor;
+		}
+		else
+			break;
 	}
-	return;
 }
 
 // remove the smallest element
-HNode* Heap::dequeue() {
-	HNode* temp = tree[0];
-	tree[0] = tree[tree.size() - 1];
+HNode* Heap::dequeue() {      // Return the last element if more than one
+	if (count == 0) 
+		return nullptr;
+	
+	HNode* temp = tree[1];
+	swapNodes(tree, 1, position);
+	position--;
 	count--;
-	fix_down(0);
+	fix_down(1);
 	return temp;
 }
 
 // fix the tree after replacing the smallest element
-void Heap::fix_down(const int& position) {
-	int index = position;
-	int left = 2 * index + 1;
-	int right = 2 * index + 2;
-	if (left < count && tree[left]->weight < tree[index]->weight)
-		index = left;
-	if (right < count && tree[right]->weight < tree[index]->weight)
-		index = right;
-	if (index != position) {
-		swapNodes(tree[index], tree[position]);
-		fix_down(index);
+void Heap::fix_down(const int& index) {      // Compare elements and children, swapping when needed
+	int location = index;
+	int temp;
+	int left = 2 * location;
+	int right = (2 * location) + 1;
+	if (right <= position && *tree[right] < *tree[left])
+		temp = right;
+	else
+		temp = left; 
+	if (*tree[temp] < *tree[location]) {
+		swapNodes(tree, temp, location);
+		location = temp;
 	}
 }
 
 void Heap::clear() {
-	HNode* temp = nullptr;    // Dequeue all nodes from the heap and delete them
-	while(count >= 1) {
-		temp = dequeue();
-		delete temp;
-	}
-	return;
+	for (int i = 0; i <= position; i++)
+		delete tree[i];
+	position = 0;
+	count = 0;
+	tree.resize(2);
 }
