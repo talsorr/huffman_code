@@ -1,23 +1,25 @@
 #include "Heap.hpp"
 
+// swap 2 nodes
+void swapNodes( HNode* node1, HNode* node2) {
+	HNode temp = *node1;
+	*node1 = *node2;
+	*node2 = temp;
+}
+
 // add an element to the tree
 void Heap::enqueue( HNode* newElement) {
-	tree.push_back(newElement);
+	tree.push_back(0);
 	position = tree.size() - 1;
 	fix_up(position);
-	count++;
-	return;
+	tree[position] = newElement;
 }
 
 // fix the heap from a specific index up
-void Heap::fix_up(const int& position) {
-	HNode* temp = nullptr;
-	int index = position;
-	while ((index > 1) && (tree[index / 2]->weight > tree[index]->weight)) {
-		temp = tree[index];
-		tree[index] = tree[index / 2];
-		tree[index / 2] = temp;
-		index = (index / 2);
+void Heap::fix_up(const int& index) {
+	position = index;
+	while ((position > 1) && (tree[position] < tree[(position - 1) / 2])) {
+		tree[position] = tree[(position - 1) / 2]; 
 	}
 	return;
 }
@@ -36,20 +38,18 @@ void Heap::fix_down(const int& position) {
 	int index = position;
 	int left = 2 * index + 1;
 	int right = 2 * index + 2;
-	if (left < count && *tree[left] < *tree[index])
+	if (left < count && tree[left]->weight < tree[index]->weight)
 		index = left;
-	if (right < count && *tree[right] < *tree[index])
+	if (right < count && tree[right]->weight < tree[index]->weight)
 		index = right;
 	if (index != position) {
-		HNode* temp = tree[index];
-		tree[index] = tree[position];
-		tree[position] = temp;
+		swapNodes(tree[index], tree[position]);
 		fix_down(index);
 	}
 }
 
 void Heap::clear() {
-	HNode* temp = nullptr;
+	HNode* temp = nullptr;    // Dequeue all nodes from the heap and delete them
 	while(count >= 1) {
 		temp = dequeue();
 		delete temp;

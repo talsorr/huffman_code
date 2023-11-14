@@ -7,10 +7,13 @@
 HNode::HNode(const char& s, const int& t) {
 	value = s;
 	weight = t;
+	left = nullptr;
+	right = nullptr;
 }
 
 // constructor for internal nodes
 HNode::HNode(HNode* l, HNode* r) {
-	value = '*';
 	weight = (l->weight + r->weight);
+	left = l;
+	right = r;
 }
