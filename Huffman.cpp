@@ -12,7 +12,13 @@
 // add a new <char, std::string> to the codes map with the character and its code for each leaf node
 // using std::make_pair (see create_freq)
 void Huffman::create_codes(HNode* node, const std::string& code) {
-
+	if (node->left == nullptr && node->right == nullptr)
+		codes.insert(std::make_pair(node->value, code));
+	if (node->left != nullptr)
+		create_codes(node->left, code + '0');
+	if (node->right != nullptr)
+		create_codes(node->right, code + '1');
+	return;
 }
 
 // implement this function
@@ -23,7 +29,7 @@ void Huffman::create_codes(HNode* node, const std::string& code) {
 // the characters from each HNode will be used (inner nodes should use '*')
 // there is no return value as s is being edited with each resursive call
 void Huffman::serialize_tree(HNode* node, std::string& s) {
-
+	
 }
 
 // implement this function
@@ -33,7 +39,9 @@ void Huffman::serialize_tree(HNode* node, std::string& s) {
 // if the code for a is 1, the code for b is 01, and the code for c is 00
 // the code for the word 'bad' would be '01100'
 void Huffman::encode_string(const std::string& input, std::string& encoded_string) {
-
+	for(int i = 0; i < input.length(); i++) {
+		encoded_string += codes[input[i]];
+	}
 }
 
 Encoded Huffman::encode(const std::string& s) {
